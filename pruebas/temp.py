@@ -1,9 +1,10 @@
-
+# NO MODIFICAR!
+# SE EFECTUAN PRUEBAS
 
 class ListaEnlazada:
 
 	def __init__(self, father):
-		self.father= father # Con father hago referencia un ente superior a la lista enlazada
+		self.father= father # Con father hago referencia un ente superior a la lista enlazada 
 		self.first= None
 	
 	def add(self, addV):
@@ -18,9 +19,18 @@ class ListaEnlazada:
 					exist= False
 				else: # Si no
 					c = c.getNext() # Pasamos al siguiente de c
-			
-	def getFather(self):
-		return sefl.first
+	
+	def remove(self, remV): # remV hace referencia al VALOR de el objeto, NO es un nodo
+		   pass
+
+	def len(self):
+		len = 0
+		i= True
+		t= self.first
+		while t is not None:			
+			len += 1
+			t= t.getNext()
+		return len
 
 
 class Nodes(object):
@@ -29,8 +39,7 @@ class Nodes(object):
 		self.value= None
 		self.iAm= None
 		self.branches= None
-		#self.next= None
-	
+			
 	def getType(self):
 		return self.iAm
 
@@ -61,12 +70,4 @@ class Archivo(Nodes):
 	def __init__(self, value):
 		self.iAm = "archivo"
 		self.value = value
-
-c = Carpeta("carpeta1")
-c.add(Carpeta("carpeta2"))
-c.add(Carpeta("carpeta3"))
-c.add(Carpeta("carpeta4"))
-#c.branches.first.setNext(Carpeta("car"))
-#c.branches.first.getNext().setNext(Carpeta("hola"))
-c.branches.first.add(Carpeta("h"))
-print c.branches.first.branches.first.getValue()
+		self.next= None
