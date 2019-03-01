@@ -3,9 +3,8 @@
 
 class ListaEnlazada:
 
-	def __init__(self, father):
-		self.father= father # Con father hago referencia un ente superior a la lista enlazada 
-		self.first= None
+	def __init__(self):
+		self.first= None # Es un nodo
 	
 	def add(self, addV):
 		c = self.first
@@ -21,6 +20,7 @@ class ListaEnlazada:
 					c = c.getNext() # Pasamos al siguiente de c
 	
 	def remove(self, remV): # remV hace referencia al VALOR de el objeto, NO es un nodo
+	# De acuerdo a remV se buscara el nodo
 		   pass
 
 	def len(self):
@@ -33,18 +33,25 @@ class ListaEnlazada:
 		return len
 
 
-class Nodes(object):
+class Node():
+	"""
+		Un nodo es una estrucutra personal de un arbol, lista enlazada.
+		Cada nodo puede contener cualquier cosa, en este caso, Carpetas y Archivos.
+		
+	"""
 
-	def __init__(self):	
-		self.value= None
-		self.iAm= None
-		self.branches= None
+	def __init__(self, value):	
+		self.value= value # Contiene una instancia de una Carpeta o Archivo, no es una variable comun
+		self.next= None
 			
-	def getType(self):
-		return self.iAm
+	def type(self): # Retorna el nombre de la clase a la que pertenece
+		return self.value.__class__.__name__
 
 	def getValue(self):
 		return self.value
+
+	def getName(self): # Retorna el nombre del valor que contiene el nodo
+		return self.value.name
 
 	def setNext(self, nextNode):
 		self.next= nextNode
@@ -53,21 +60,17 @@ class Nodes(object):
 		return self.next
 
 
-class Carpeta(Nodes):
+class Carpeta:
 
-	def __init__(self, value):
-		self.iAm = "carpeta"
-		self.value = value
-		self.branches = ListaEnlazada(self)
-		self.next= None
+	def __init__(self, name):
+		self.name = name
+		self.branches = ListaEnlazada()
 		
 	def add(self, addValue):
 		self.branches.add(addValue)
 	
 	
-class Archivo(Nodes):
+class Archivo:
 
-	def __init__(self, value):
-		self.iAm = "archivo"
-		self.value = value
-		self.next= None
+	def __init__(self, name):
+		self.name = name		

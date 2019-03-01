@@ -1,6 +1,6 @@
 # arbol-proyecto-aed
 
-"""
+
 CAMBIOS :
 	
 	GENERAL:
@@ -25,4 +25,3 @@ CAMBIOS :
 		28/02/19
 		Aun en re acomodacion de los cambios efectuados en Node
 	
-"""
