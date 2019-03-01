@@ -37,4 +37,8 @@ CAMBIOS :
 	Lista Enlazada:
 		28/02/19
 		Se crea como TDA separado, trabaja con nodos en su interior
+
+        Consola:
+		01/03/19
+		Consola trabaja unicamente con arvol y es llamada con una sola función sin agregarle parametros. Puede manejar ciertos errores y ciertos casos con los comandos. No obstante, le falta implementación con arbol. Consola corre en su propia carpeta con el ultimo commit hasta la fecha (hoy 1 de marzo 2019 a las 00:14).
 	
