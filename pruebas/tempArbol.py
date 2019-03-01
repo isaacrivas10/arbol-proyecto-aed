@@ -85,7 +85,20 @@ class Arbol:
 			return False
 
 	def checkPath(self, path):
-		# Uso: /path/to/move <-- respetar / al incio
+		"""
+			Se encarga de tomar un string que sera interpretado como
+			un path, este lo divide en sus secciones y retorna un arreglo
+			en orden de nivel con el nombre de los directorios.
+			Verifica si es un absolute o relative path.
+			Sin recursividad
+
+			Ejemplo:
+				[in] path = /path/to/move
+				[out] = ['absolute', 'path', 'to', 'move']
+
+				[in] path = path/to/move
+				[out] = ['relative', 'path', 'to', 'move']
+		"""
 		try:
 			pathCheck= path.split("/")
 			if path[0] == "/":
@@ -157,6 +170,7 @@ print arbol.moveTo("carpeta", "/")
 arbol.add("carpeta1", "-c")
 print arbol.currentNode.getValue().branches.len()
 print arbol.getBranches()
+print arbol.checkPath("path/to/move")
 
 
 
