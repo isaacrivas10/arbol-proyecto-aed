@@ -19,9 +19,30 @@ class ListaEnlazada:
 				else: # Si no
 					c = c.getNext() # Pasamos al siguiente de c
 	
-	def remove(self, remV): # remV hace referencia al VALOR de el objeto, NO es un nodo
+	def remove(self, remV): # remV hace referencia al NODO a borrar
+	# Es independiente al tipo
 	# De acuerdo a remV se buscara el nodo
-		   pass
+		if remV is self.first:
+			self.first= self.first.getNext()
+		else:
+			searched_list = self.search(remV)
+			node = self.first
+			for j in range(searched_list[2]-1):
+				node= node.getNext() # Me localizo al nodo que esta
+				# antes del que voy a borrar
+			node.setNext(searched_list[1])
+	   
+
+	def search(self, searchValue):
+		found= None
+		node= self.first
+		for o in range(self.len()):
+			before= node
+			if node is searchValue:
+				return [node, node.getNext(), o]
+			else:
+				node= node.getNext()
+		
 
 	def len(self):
 		len = 0
@@ -69,7 +90,9 @@ class Carpeta:
 	def add(self, addValue):
 		self.branches.add(addValue)
 	
-	
+	def remove(self, remValue):
+		self.branches.remove(remValue)
+
 class Archivo:
 
 	def __init__(self, name):
