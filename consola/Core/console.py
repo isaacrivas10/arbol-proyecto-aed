@@ -6,8 +6,14 @@
       que todo el programa sea coherente con las otras clase.
      -Se implementan funciones con la clase Arbol.
      -Mejor manejo de impresión de errores.
-     -Creaciñon de funciones extra para alivianar otras funciones con 
+     -Creación de funciones extra para alivianar otras funciones con 
       la repetición de instrucciones
+[Versión 2.5]:
+    -Algunos cambios en base a prueba y error.
+    -Reestructuración de algunas funciones y sus operaciones en base
+     a recomendaciones dadas.
+    -Trabajé esto en Windows y no en la maquina virtual asi que por eso
+     hago este commit, para poder seguir trabajando en Ubuntu.
 """
 from tempArbol import *
 
@@ -17,6 +23,8 @@ class Console:
 		self.keepRunning = True
 		self.currentDirectory = "~"
 		self.tree = Arbol()
+		self.command = None
+		self.value = None
 
 	"""
        Setters y getters del directorio actual. Esto se pensó asi para que la función run
@@ -42,6 +50,7 @@ class Console:
      """
 	def run(self, currentDirectory):
 		while self.keepRunning:
+			#self.currentDirectory = arbol.getAbsolutePath()
 			command = raw_input("_H4ck3rM4n@NASA:%s$ " %(self.currentDirectory))
 
 			if command == 'exit':
@@ -60,68 +69,50 @@ class Console:
 	"""
 	def process(self, command):
 
-		#¿Tiene el comando algun parametro?
-		if ' ' in command:
-			commandParts = command.split(" ")
-			self.command = commandParts[0]
+		self.commandParts = command.split(" ")
 
+		#Lo ingresado por el usuario tiene mas de una palabra?
+		if (len(commandParts) > 1):
 			#¿Existe?
-			if self.commandExists(self.command):
-				#¿Es 'ls -l' con parametros o es 'rm -r'?
-				if (len(commandParts) > 2) and (((splittedCommand[1] == "-l") or (splittedCommand[1] == "-r"))):
+			if self.commandExists(self.commandParts[0]):
+				#¿Es 'ls -l' con parametros o es 'rm -r' con parametros?
+				if (len(commandParts) > 2) and (((commandParts[1] == "-l") or (commandParts[1] == "-r"))):
 					self.command = commandParts[0] + " " + commandParts[1]
 					self.value = commandParts[2]
 
 				#¿Es 'ls -l' sin parametros?
-				elif (len(commandParts) == 2) and (splittedCommand[1] == "-l"):
+				elif (len(commandParts) == 2) and (commandParts[1] == "-l"):
 					self.command = commandParts[0] + " " + commandParts[1]
-					self.executeWithoutParameters(command)
+					self.execute(command)
 
-				#¿Es 'rm -r' y no tiene parametros?
-				elif (len(commandParts) == 2) and (splittedCommand[1] == "-r"):
+				#¿Es 'rm -r' y no tiene parametros? Entonces tirar error.
+				elif (len(commandParts) == 2) and (commandParts[1] == "-r"):
 					self.printException("rm -r no param")#Se necesita un parametro y se le indica al usuario
 
+				#Si existe el comando y no son los otros casos, pasa a ejecución
 				else:
+					self.command = commandParts[0]
 					self.value = commandParts[1]
+					self.execute(self.command, self.value)
 
+			#Si no existe el comando se le indica al usuario
 			else:
-				self.printException(command, "Inexistente")
+				printException(self.commandParts[0], "Inexistente")
 
-		#Si no tiene parametro se ejecuta sin parametro (se dará error de ocuparse un parametro)
+		#Si lo dado por el usuario es solamente un comando, se verifica que existe y se ejecuta
 		else:
-			if self.commandExists(command):
-				self.executeWithoutParameters(command)
+			if self.commandExists(self.commandParts[0]):
+				self.execute(command)
+
 			else:
 				self.printException(command, "Inexistente")
 
-	"""
-	   executeWithoutParameters() recibe el comando y si cumple con alguno de los casos dados
-	   se procedera a llamar alguna función de arbol que haga lo pedido. Si no cumple se procede
-	   a imprimir el error de que ocupa un parametro
-	"""
-	def executeWithoutParameters(self, command):
-
-		currentDirectory = self.getCurrentDirectory()
-
-		if (command == "pwd"):
-			print self.tree.getBranches()
-
-		elif (command == "ls"):
-			pass
-
-	def executeWithParameters(self, command, value):
-		
-		path = getCurrentDirectory
-
-		if (command == touch):
-			arbol.add(value, "-a")
-
-		elif(command == mkdir):
-			arbol.add(value, "-c")
+	def execute(self, command, value = None):
+		self.value = value
 
 	"""
 	   printException() recibe el comando (si este no existe incluso) y el tipo de error.
-	   al encontrar el caso especifico, se le da un mensaje especifico al erro, simulando
+	   al encontrar el caso especifico, se le da un mensaje especifico al error, simulando
 	   una terminal de Linux
 	"""
 	def printException(self, command, exception):
@@ -134,7 +125,8 @@ class Console:
 
 	"""
 	   commandExists() revisa si el comando dado por el usuario es un comando existente
-	   y disponible para su uso.
+	   y disponible para su uso. Comandos existentes están ubicados en un arreglo para 
+	   mayor conveniencia.
 	"""
 	def commandExists(self, command):
 		existingCommands = ["pwd", "cd", "ls", "ls -l", "touch", "mkdir", "mv", "rm", "rm -r", "find"]
