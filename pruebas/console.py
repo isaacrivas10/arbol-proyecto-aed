@@ -29,6 +29,12 @@
    -Se le cambia el nombre de printException() a printExcept()
    -Se le agregan bloques elif en verify() para compensar otros casos especiales
    -Faltan mas bloques en execute() y en printExcept()
+
+[Versión 5.0]:
+   -Cambios en algunas funciones y en el mensaje de bienvenida asimismo como el
+    despedida.
+   -Implementación completa de clase Arbol (exceptuando find)
+   -Ciertas correcciones en base a prueba y error
 """
 from tempArbol import *
 import random
@@ -40,7 +46,6 @@ class Console:
 		self.keepRunning = True
 		self.currentDirectory = self.tree.getRoot()
 		self.command = None
-		self.value = None
 
 	"""
        Setters y getters del directorio actual. Esto se pensó asi para que la función run
@@ -58,7 +63,12 @@ class Console:
 	"""
 	def start(self):
 
-		print("\n ***Terminal de Linux***\n")
+		print("\n *************************Terminal de Linux************************\n")
+		print("Integrantes del grupo: -Rosa Ávila (20161000265)")
+		print("                       -Isaac Rivas (20181004937)")
+		print("                       -Kevin Gerardo Bueno (20171000254)")
+		print("                       -Josué Ariel Izaguirre (20171034157)")
+
 
 		self.run()
 
@@ -147,34 +157,61 @@ class Console:
 	   de su instrucción.
 	"""
 	def execute(self, command, value = None):
-		self.value = value
 
 		if (self.command == "pwd"):
-			self.tree.getBranches()
-			#print self.tree.getBranches()
+			print self.tree.currentPath
 
 		elif (self.command == "cd"):
-			path = value
-			pathParts = value.split("/")
-			moveV = pathParts[(len(pathParts))-1]
+			#Si solo se escribe cd, se recurre a devolver al usuario a la raiz
+			if value is None:
+				self.currentDirectory = self.tree.getRoot()
 
-			"""
-			   Si el cambio se logró hacer, se le informa al usuario. Asimismo se 
-			   procede a cambiar el directorio que se muestra en la consola.
-			"""
-			if self.tree.moveToPosition(moveV, path):
-				print ("Se ha cambiado de directorio exitosamente.")
-				self.setCurrentDirectory()
-
-			#De no lograrse el movimiento, se le informa al usuario.
+			#Si no solo escribió cd, se procede a moverse al nodo deseado
 			else:
-				self.printExcept(command, "InvalidMovement", path)
+				path = value
+				pathParts = value.split("/")
+				moveV = pathParts[(len(pathParts))-1]
+
+				"""
+				Si el cambio se logró hacer, se le informa al usuario. Asimismo se 
+				procede a cambiar el directorio que se muestra en la consola.
+				"""
+				if self.tree.moveToPosition(moveV, path):
+					print ("Se ha cambiado de directorio exitosamente.")
+					self.setCurrentDirectory()
+
+					#De no lograrse el movimiento, se le informa al usuario.
+				else:
+					self.printExcept(command, "InvalidMovement", path)
 
 		elif (self.command == "ls"):
-			pass
+			#De escribirse solamente ls, se procede sin parametros a llamar a la función
+			if value is None:
+				branchArray = self.tree.getBranches()
+
+			#Ls con un valor, los parametros son enviados
+			else:
+				branchArray = self.tree.getBranches(value)
+
+			path = ""
+
+			#Se imprimen las ramas de manera horizontal
+			for i in range (0, (len(branchArray)-1)):
+				path = path + " " + branchArray[i]
+
+			print path
 
 		elif (self.command == "ls -l"):
-			pass
+			if value is None:
+				branchArray = self.tree.getBranches()
+
+			else:
+				branchArray = self.tree.getBranches(value)
+
+			#Se procede a hace casi lo mismo que con ls, la unica diferencia es que se
+			#enlista de manera vertical
+			for i in range (0, (len(branchArray)-1)):
+				print branchArray[i]
 
 		elif (self.command == "touch"):
 			self.tree.add(value, "-a")
@@ -193,14 +230,21 @@ class Console:
 			if self.tree.moveNodeTo(pathToMove, where):
 				print ("%s: %s movido con exito al directorio: %s")%(command, pathToMove, where)
 
-		elif (self.command == "rm"):
-			pass
+		elif (self.command == "rm") and (folderChecker(value) == False):
+			if(self.tree.remove(value)):
+				print("%s: %s borrado con exito.")%(command, value)
+			else:
+				self.printExcept(command, "rm -r no param")
 
 		elif (self.command == "rm -r"):
-			pass
+			if(self.tree.remove(value)):
+				print("%s: %s borrado con exito.")%(command, value)
+
+			else:
+				self.printExcept(command, "rm -r no param")
 
 		elif (self.command == "find"):
-			pass
+			pass #sin consluir
 
 	"""
 	   printExcept() recibe el comando (si este no existe incluso) y el tipo de error.
@@ -235,11 +279,13 @@ class Console:
 				return True
 
 	def exitMessage(self):
-		messages = ["Enviando misiles nucleares, gracias por hackear con nostros :v",
-		            "End of Line.", "Mission Failed. We'll get them next time.",
-		            "All you had to do was follow the damn train, CJ!"
+		messages = ["Fin de la Linea.",
+		            "Terminando programa...", "Gracias por hackear con nosotros.",
+		            "Guardando datos..."
 		           ]
 
-		pick = random.randrange(4)
+		n = (len(messages)-1)
+
+		pick = random.randrange(n)
 
 		print ("\n*\ %s \*\n\n")%(messages[pick])
