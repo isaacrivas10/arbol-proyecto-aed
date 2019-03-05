@@ -34,7 +34,7 @@
    -Cambios en algunas funciones y en el mensaje de bienvenida asimismo como el
     despedida.
    -Implementación completa de clase Arbol (exceptuando find)
-   -Ciertas correcciones en base a prueba y error
+   -Ciertas correcciones en base a pruebay error
 """
 from tempArbol import *
 import random
@@ -52,7 +52,7 @@ class Console:
        sea más dinamica en cuanto a lo que se muestre en la consola.
     """
 	def setCurrentDirectory(self):
-		self.currentDirectory = self.tree.getBranches() #Aun no está en su uso optimo
+		self.currentDirectory = self.tree.currentPath
 
 	def getCurrentDirectory(self):
 		return self.currentDirectory
@@ -138,7 +138,7 @@ class Console:
 
 			#Si no existe el comando se le indica al usuario
 			else:
-				printExcept(self.commandParts[0], "Inexistente")
+				self.printExcept(self.commandParts[0], "Inexistente")
 
 		#Si lo dado por el usuario es solamente un comando, se verifica que existe y se ejecuta
 		elif (len(self.commandParts) == 1):
@@ -168,9 +168,16 @@ class Console:
 
 			#Si no solo escribió cd, se procede a moverse al nodo deseado
 			else:
-				path = value
+				path = ""
 				pathParts = value.split("/")
 				moveV = pathParts[(len(pathParts))-1]
+				
+				if (len(pathParts) == 2):
+					path = "/"
+
+				elif(len(pathParts) > 2):
+					for i in range (len(pathParts)-2):
+						path = path + "/" + pathParts[i]
 
 				"""
 				Si el cambio se logró hacer, se le informa al usuario. Asimismo se 
@@ -193,10 +200,10 @@ class Console:
 			else:
 				branchArray = self.tree.getBranches(value)
 
-			path = ""
+			path = " "
 
 			#Se imprimen las ramas de manera horizontal
-			for i in range (0, (len(branchArray)-1)):
+			for i in range (0, (len(branchArray))):
 				path = path + " " + branchArray[i]
 
 			print path
@@ -223,7 +230,7 @@ class Console:
 
 
 		elif (self.command == "mv"):
-			valueParts = value.splt(" ")
+			valueParts = value.split(" ")
 			pathToMove = valueParts[0]
 			where = valueParts[1]
 
