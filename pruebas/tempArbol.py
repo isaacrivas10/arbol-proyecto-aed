@@ -15,6 +15,7 @@ class Arbol:
 		# El constructor define la raiz de el directorio
 		self.root = Node(Carpeta("/")) # Root es un nodo,contiene una carpeta adentro
 		self.currentNode= self.root
+		self.currentPath= self.getRoot()
 
 	def getRoot(self):
 		return self.root.getName()
@@ -40,7 +41,7 @@ class Arbol:
 		else:
 			deleteNode= self.currentNode
 		b= self.searchInNode(deleteNode, remValue)
-		print b.getName()
+		
 		if b != False:
 			deleteNode.getValue().remove(b)
 			return True
@@ -90,14 +91,37 @@ class Arbol:
 			tempToMove= self.walk(self.currentNode, pathToMove[1:])
 
 			if tempToMove is not False:
-				deleteFrom= sel.walk(self.currentNode, pathToMove[1:-1])
+				deleteFrom= self.walk(self.currentNode, pathToMove[1:-1])
 			else:
 				return tempToMove
 		
 		# Si llega hasta aqui significa que paso ambas pruebas
-		destinationBranch= tempWhere.getValue()
-		destinationBranch.add(Node(Carpeta(tempToMove.getName())))
-		self.remove(tempToMove.getName(), deleteFrom)
+		destinationBranch= tempWhere.getValue().branches
+
+		#	Pasos
+		#	1. Obtengo el primero de los children en el destino
+		#	2. Identifico al ultimo
+		#	3. Posiciono el nodo en el final, el sig es None
+		#	4. Lo elimino de donde vino			
+		#
+
+		tempNode= destinationBranch.first
+
+		if tempNode is not None:
+			for i in range(destinationBranch.len()): #1
+				before= tempNode #2
+				if tempNode is not None:
+					tempNode= tempNode.getNext()
+
+			before.setNext(Node(Carpeta(tempToMove.getName())))#3
+			if self.folderChecker(tempToMove):
+				before.getNext().branches = tempToMove.getValue().branches
+		else:
+			destinationBranch.first= Node(Carpeta(tempToMove.getName()))
+			if self.folderChecker(tempToMove):
+				destinationBranch.first.branches= tempToMove.getValue().branches
+		
+		self.remove(tempToMove.getName(), deleteFrom) #4
 
 	def moveToPosition(self, moveV, path):
 		"""
@@ -119,6 +143,7 @@ class Arbol:
 			if checked[1] == self.currentNode.getName():
 				temp= self.searchInNode(self.currentNode, moveV)
 				if temp != False:
+					self.currentPath= "%s/%s" % (self.currentPath, moveV)
 					return self.folderChecker(temp, True)
 				else:
 					return False
@@ -133,6 +158,7 @@ class Arbol:
 				if temp is not False:# Verifico ahora su el moveV existe
 					moveDir= self.searchInNode(temp, moveV)
 					if moveDir is not False:
+						self.currentPath= "%s/%s" % (path, moveV)
 						return self.folderChecker(moveDir, True)
 					else:
 						return False
@@ -140,12 +166,13 @@ class Arbol:
 					return False
 			elif len(checked) is 1:
 				if moveV is "/" :
+					self.currentPath= self.getRoot()
 					self.currentNode= self.root
 					return True
 				else:
 					temp = self.searchInNode(self.root, moveV)
 					if temp is not False:
-						
+						self.currentPath= "/%s" % (moveV)
 						return self.folderChecker(temp, True)
 					else:
 						return False
@@ -251,16 +278,4 @@ class Arbol:
 			return True
 		else:
 			return False
-
-# Crea una instancia del arbol
-arbol = Arbol()
-arbol.add("carpeta", "-c") # /carpeta/
-arbol.add("node", "-c") # /node/
-arbol.add("archivo", "-a") # /archivo
-
-arbol.moveToPosition("node", "/")
-arbol.add("carpeta2", "-c")
-arbol.moveNodeTo("/carpeta", "/node")
-arbol.movePositionTo("/", "/")
-print arbol.getBranches()
 
